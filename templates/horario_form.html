@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 class="mb-4">Adicionar Horário para {{ turma.nome }}</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Adicionar</button>
+        <a href="{% url 'turma_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}
