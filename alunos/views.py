@@ -9,6 +9,10 @@ def turma_list(request):
     dias_da_semana = ['terça-feira', 'quarta-feira', 'sexta-feira']
     datas = {dia: (now() + timedelta(days=(i - now().weekday()) % 7)).date() for i, dia in enumerate(dias_da_semana, start=1)}
 
+    # Separar turmas matutina e vespertina
+    turmas_matutina = turmas.filter(nome__icontains='Matutina')
+    turmas_vespertina = turmas.filter(nome__icontains='Vespertina')
+
     # Preparar presenças
     presencas_dict = defaultdict(lambda: defaultdict(lambda: None))
     for turma in turmas:
@@ -17,7 +21,13 @@ def turma_list(request):
             for presenca in presencas:
                 presencas_dict[aluno.id][presenca.data] = presenca.presente
 
-    return render(request, 'turma_list.html', {'turmas': turmas, 'datas': datas, 'presencas_dict': presencas_dict})
+    context = {
+        'turmas_matutina': turmas_matutina,
+        'turmas_vespertina': turmas_vespertina,
+        'datas': datas,
+        'presencas_dict': presencas_dict
+    }
+    return render(request, 'turma_list.html', context)
 
 def aluno_add(request, turma_id):
     turma = get_object_or_404(Turma, id=turma_id)
