@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3">
-        <h1>Diário de Turmas CRAS</h1>
-    </header>
-    <main class="container my-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">CRAS Diário</a>
+    </nav>
+    <div class="container mt-4">
         {% block content %}
         {% endblock %}
-    </main>
+    </div>
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
