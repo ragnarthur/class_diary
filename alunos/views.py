@@ -3,28 +3,38 @@ from .models import Turma, Aluno, Horario, Presenca
 from .forms import AlunoForm, HorarioForm, TurmaForm, PresencaForm
 from django.utils.timezone import now, timedelta
 from collections import defaultdict
+from datetime import datetime
 
 def turma_list(request):
+    data_atual = now().date()
+    if 'dia' in request.GET:
+        data_atual = datetime.strptime(request.GET['dia'], '%Y-%m-%d').date()
+    else:
+        data_atual = now().date()
+
+    data_anterior = data_atual - timedelta(days=1)
+    data_posterior = data_atual + timedelta(days=1)
+
     turmas = Turma.objects.all()
-    dias_da_semana = ['terça-feira', 'quarta-feira', 'sexta-feira']
-    datas = {dia: (now() + timedelta(days=(i - now().weekday()) % 7)).date() for i, dia in enumerate(dias_da_semana, start=1)}
 
     # Separar turmas matutina e vespertina
     turmas_matutina = turmas.filter(nome__icontains='Matutina')
     turmas_vespertina = turmas.filter(nome__icontains='Vespertina')
 
     # Preparar presenças
-    presencas_dict = defaultdict(lambda: defaultdict(lambda: None))
+    presencas_dict = defaultdict(lambda: None)
     for turma in turmas:
         for aluno in turma.alunos.all():
-            presencas = Presenca.objects.filter(aluno=aluno, data__in=datas.values())
-            for presenca in presencas:
-                presencas_dict[aluno.id][presenca.data] = presenca.presente
+            presenca = Presenca.objects.filter(aluno=aluno, data=data_atual).first()
+            if presenca:
+                presencas_dict[aluno.id] = presenca.presente
 
     context = {
         'turmas_matutina': turmas_matutina,
         'turmas_vespertina': turmas_vespertina,
-        'datas': datas,
+        'data_atual': data_atual,
+        'data_anterior': data_anterior,
+        'data_posterior': data_posterior,
         'presencas_dict': presencas_dict
     }
     return render(request, 'turma_list.html', context)
@@ -71,6 +81,9 @@ def presenca_add(request, aluno_id):
     if request.method == 'POST':
         data = request.POST.get('data')
         presente = request.POST.get('presente') == 'on'
-        Presenca.objects.create(aluno=aluno, data=data, presente=presente)
+        presenca, created = Presenca.objects.update_or_create(
+            aluno=aluno, data=data,
+            defaults={'presente': presente}
+        )
         return redirect('turma_list')
     return render(request, 'presenca_form.html', {'aluno': aluno})
