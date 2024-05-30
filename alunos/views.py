@@ -4,13 +4,20 @@ from .forms import AlunoForm, HorarioForm, TurmaForm, PresencaForm
 from django.utils.timezone import now, timedelta
 from collections import defaultdict
 from datetime import datetime
+from babel.dates import format_date
 
 def turma_list(request):
     data_atual = now().date()
     if 'dia' in request.GET:
-        data_atual = datetime.strptime(request.GET['dia'], '%Y-%m-%d').date()
+        try:
+            data_atual = datetime.strptime(request.GET['dia'], '%Y-%m-%d').date()
+        except ValueError:
+            data_atual = now().date()
     else:
         data_atual = now().date()
+
+    nome_dia = format_date(data_atual, 'EEEE', locale='pt_BR')
+    data_formatada = format_date(data_atual, "d 'de' MMMM 'de' yyyy", locale='pt_BR')
 
     data_anterior = data_atual - timedelta(days=1)
     data_posterior = data_atual + timedelta(days=1)
@@ -35,7 +42,10 @@ def turma_list(request):
         'data_atual': data_atual,
         'data_anterior': data_anterior,
         'data_posterior': data_posterior,
-        'presencas_dict': presencas_dict
+        'presencas_dict': presencas_dict,
+        'nome_dia': nome_dia,
+        'data_formatada': data_formatada,
+        'now': now
     }
     return render(request, 'turma_list.html', context)
 
