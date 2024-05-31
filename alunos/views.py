@@ -24,11 +24,9 @@ def turma_list(request):
 
     turmas = Turma.objects.all()
 
-    # Separar turmas matutina e vespertina
     turmas_matutina = turmas.filter(nome__icontains='Matutina')
     turmas_vespertina = turmas.filter(nome__icontains='Vespertina')
 
-    # Preparar presenças
     presencas_dict = defaultdict(lambda: None)
     for turma in turmas:
         for aluno in turma.alunos.all():
@@ -97,3 +95,12 @@ def presenca_add(request, aluno_id):
         )
         return redirect('turma_list')
     return render(request, 'presenca_form.html', {'aluno': aluno})
+
+def home(request):
+    return render(request, 'home.html')
+
+def sobre(request):
+    return render(request, 'sobre.html')
+
+def professores(request):
+    return render(request, 'professores.html')  # Adicionando a view 'professores'
