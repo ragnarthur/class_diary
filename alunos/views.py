@@ -1,10 +1,15 @@
+# alunos/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Turma, Aluno, Horario, Presenca
 from .forms import AlunoForm, HorarioForm, TurmaForm, PresencaForm
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now
 from collections import defaultdict
 from datetime import datetime
 from babel.dates import format_date
+
+def home(request):
+    return render(request, 'home.html')
 
 def turma_list(request):
     data_atual = now().date()
@@ -18,9 +23,6 @@ def turma_list(request):
 
     nome_dia = format_date(data_atual, 'EEEE', locale='pt_BR')
     data_formatada = format_date(data_atual, "d 'de' MMMM 'de' yyyy", locale='pt_BR')
-
-    data_anterior = data_atual - timedelta(days=1)
-    data_posterior = data_atual + timedelta(days=1)
 
     turmas = Turma.objects.all()
 
@@ -38,8 +40,6 @@ def turma_list(request):
         'turmas_matutina': turmas_matutina,
         'turmas_vespertina': turmas_vespertina,
         'data_atual': data_atual,
-        'data_anterior': data_anterior,
-        'data_posterior': data_posterior,
         'presencas_dict': presencas_dict,
         'nome_dia': nome_dia,
         'data_formatada': data_formatada,
@@ -96,11 +96,8 @@ def presenca_add(request, aluno_id):
         return redirect('turma_list')
     return render(request, 'presenca_form.html', {'aluno': aluno})
 
-def home(request):
-    return render(request, 'home.html')
-
 def sobre(request):
     return render(request, 'sobre.html')
 
 def professores(request):
-    return render(request, 'professores.html')  # Adicionando a view 'professores'
+    return render(request, 'professores.html')

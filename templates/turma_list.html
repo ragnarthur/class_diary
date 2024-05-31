@@ -3,11 +3,6 @@
 {% block content %}
     <div class="mb-4">
         <h2 class="text-center">Diário de Turmas</h2>
-        <div class="text-center">
-            <a href="?dia={{ now|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">Hoje</a>
-            <a href="?dia={{ data_anterior|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">Anterior</a>
-            <a href="?dia={{ data_posterior|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">Próximo</a>
-        </div>
         <h4 class="text-center mt-3">{{ nome_dia|capfirst }}, {{ data_formatada }}</h4>
     </div>
 
