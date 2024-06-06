@@ -77,6 +77,7 @@ def save_presences_vespertina(request):
         return redirect('turma_list')
 
 def export_presences_to_excel(request):
+    # Determinar o intervalo de datas para exportação
     export_type = request.GET.get('type', 'manual')
     year = request.GET.get('year', localtime(now()).year)
     month = request.GET.get('month', localtime(now()).month)
@@ -85,11 +86,16 @@ def export_presences_to_excel(request):
         start_date = datetime(int(year), int(month), 1).date()
         end_date = datetime(int(year), int(month), calendar.monthrange(int(year), int(month))[1]).date()
     else:
-        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+        start_date = request.GET.get('start_date', localtime(now()).date())
+        end_date = request.GET.get('end_date', localtime(now()).date())
 
     turmas = Turma.objects.all().order_by('nome')
     data = []
+
+    total_presencas_matutina = 0
+    total_presencas_vespertina = 0
+    total_faltas_matutina = 0
+    total_faltas_vespertina = 0
 
     for turma in turmas:
         for aluno in turma.alunos.all().order_by('nome'):
@@ -101,6 +107,29 @@ def export_presences_to_excel(request):
                     presenca.data,
                     'Presente' if presenca.presente else 'Falta'
                 ])
+                if 'matutina' in turma.nome.lower():
+                    if presenca.presente:
+                        total_presencas_matutina += 1
+                    else:
+                        total_faltas_matutina += 1
+                elif 'vespertina' in turma.nome.lower():
+                    if presenca.presente:
+                        total_presencas_vespertina += 1
+                    else:
+                        total_faltas_vespertina += 1
+
+    # Total de alunos atendidos
+    total_alunos_matutina = Presenca.objects.filter(data__range=[start_date, end_date], aluno__turma__nome__icontains='Matutina', presente=True).values('aluno').distinct().count()
+    total_alunos_vespertina = Presenca.objects.filter(data__range=[start_date, end_date], aluno__turma__nome__icontains='Vespertina', presente=True).values('aluno').distinct().count()
+
+    data.append(['', '', '', ''])
+    data.append(['', '', 'Total de Alunos Atendidos Matutina', total_alunos_matutina])
+    data.append(['', '', 'Total de Alunos Atendidos Vespertina', total_alunos_vespertina])
+    data.append(['', '', '', ''])
+    data.append(['', '', 'Total de Presenças Matutina', total_presencas_matutina])
+    data.append(['', '', 'Total de Faltas Matutina', total_faltas_matutina])
+    data.append(['', '', 'Total de Presenças Vespertina', total_presencas_vespertina])
+    data.append(['', '', 'Total de Faltas Vespertina', total_faltas_vespertina])
 
     df = pd.DataFrame(data, columns=['Turma', 'Aluno', 'Data', 'Presença'])
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -108,6 +137,7 @@ def export_presences_to_excel(request):
     df.to_excel(response, index=False)
 
     return response
+
 
 def desempenho_presencas(request):
     query = request.GET.get('q', '')
