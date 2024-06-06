@@ -4,13 +4,11 @@
 <div class="container">
     <div class="mb-4">
         <h2 class="text-center">Desempenho de Faltas e Presenças</h2>
-    </div>
-    <div class="mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar Aluno ou Turma">
+        <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar aluno ou turma">
     </div>
     <div class="table-responsive">
         <h3 class="text-primary">Turma Matutina</h3>
-        <table class="table table-hover">
+        <table class="table table-hover table-bordered" id="performanceTableMatutina">
             <thead class="thead-dark">
                 <tr>
                     <th>Turma</th>
@@ -19,11 +17,11 @@
                     <th>Total de Faltas</th>
                 </tr>
             </thead>
-            <tbody id="performanceTableMatutina">
+            <tbody>
                 {% for item in desempenho_matutina %}
                     <tr class="bg-light">
-                        <td>{{ item.turma }}</td>
-                        <td>{{ item.aluno }}</td>
+                        <td class="turma">{{ item.turma }}</td>
+                        <td class="aluno">{{ item.aluno }}</td>
                         <td>
                             <span class="badge badge-success">
                                 <i class="fa fa-check"></i> {{ item.total_presencas }}
@@ -39,8 +37,8 @@
             </tbody>
         </table>
 
-        <h3 class="text-secondary">Turma Vespertina</h3>
-        <table class="table table-hover">
+        <h3 class="text-secondary mt-5">Turma Vespertina</h3>
+        <table class="table table-hover table-bordered" id="performanceTableVespertina">
             <thead class="thead-dark">
                 <tr>
                     <th>Turma</th>
@@ -49,11 +47,11 @@
                     <th>Total de Faltas</th>
                 </tr>
             </thead>
-            <tbody id="performanceTableVespertina">
+            <tbody>
                 {% for item in desempenho_vespertina %}
                     <tr class="bg-white">
-                        <td>{{ item.turma }}</td>
-                        <td>{{ item.aluno }}</td>
+                        <td class="turma">{{ item.turma }}</td>
+                        <td class="aluno">{{ item.aluno }}</td>
                         <td>
                             <span class="badge badge-success">
                                 <i class="fa fa-check"></i> {{ item.total_presencas }}

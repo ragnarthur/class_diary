@@ -77,7 +77,6 @@ def save_presences_vespertina(request):
         return redirect('turma_list')
 
 def export_presences_to_excel(request):
-    # Determinar o intervalo de datas para exportação
     export_type = request.GET.get('type', 'manual')
     year = request.GET.get('year', localtime(now()).year)
     month = request.GET.get('month', localtime(now()).month)
@@ -86,8 +85,8 @@ def export_presences_to_excel(request):
         start_date = datetime(int(year), int(month), 1).date()
         end_date = datetime(int(year), int(month), calendar.monthrange(int(year), int(month))[1]).date()
     else:
-        start_date = request.GET.get('start_date', localtime(now()).date())
-        end_date = request.GET.get('end_date', localtime(now()).date())
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
 
     turmas = Turma.objects.all().order_by('nome')
     data = []
@@ -111,42 +110,34 @@ def export_presences_to_excel(request):
     return response
 
 def desempenho_presencas(request):
-    turmas_matutina = Turma.objects.filter(nome__icontains='Matutina').order_by('nome')
-    turmas_vespertina = Turma.objects.filter(nome__icontains='Vespertina').order_by('nome')
-    
+    query = request.GET.get('q', '')
+    turmas = Turma.objects.all().order_by('nome')
     desempenho_matutina = []
     desempenho_vespertina = []
 
-    for turma in turmas_matutina:
+    for turma in turmas:
         alunos = turma.alunos.all().order_by('nome')
         for aluno in alunos:
-            total_presencas = Presenca.objects.filter(aluno=aluno, presente=True).count()
-            total_faltas = Presenca.objects.filter(aluno=aluno, presente=False).count()
-            desempenho_matutina.append({
-                'turma': turma.nome,
-                'aluno': aluno.nome,
-                'total_presencas': total_presencas,
-                'total_faltas': total_faltas
-            })
-
-    for turma in turmas_vespertina:
-        alunos = turma.alunos.all().order_by('nome')
-        for aluno in alunos:
-            total_presencas = Presenca.objects.filter(aluno=aluno, presente=True).count()
-            total_faltas = Presenca.objects.filter(aluno=aluno, presente=False).count()
-            desempenho_vespertina.append({
-                'turma': turma.nome,
-                'aluno': aluno.nome,
-                'total_presencas': total_presencas,
-                'total_faltas': total_faltas
-            })
+            if query.lower() in aluno.nome.lower() or query.lower() in turma.nome.lower():
+                total_presencas = Presenca.objects.filter(aluno=aluno, presente=True).count()
+                total_faltas = Presenca.objects.filter(aluno=aluno, presente=False).count()
+                desempenho = {
+                    'turma': turma.nome,
+                    'aluno': aluno.nome,
+                    'total_presencas': total_presencas,
+                    'total_faltas': total_faltas
+                }
+                if 'matutina' in turma.nome.lower():
+                    desempenho_matutina.append(desempenho)
+                elif 'vespertina' in turma.nome.lower():
+                    desempenho_vespertina.append(desempenho)
 
     context = {
         'desempenho_matutina': desempenho_matutina,
-        'desempenho_vespertina': desempenho_vespertina
+        'desempenho_vespertina': desempenho_vespertina,
+        'query': query,
     }
     return render(request, 'desempenho_presencas.html', context)
-
 
 def alunos_atendidos_por_mes(request):
     current_time = localtime(now())
@@ -164,7 +155,6 @@ def alunos_atendidos_por_mes(request):
         'end_date': end_date
     }
     return render(request, 'alunos_atendidos_por_mes.html', context)
-
 
 def aluno_add(request, turma_id):
     turma = get_object_or_404(Turma, id=turma_id)
