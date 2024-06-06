@@ -1,24 +1,9 @@
 body {
     background-color: #f8f9fa;
-    font-family: 'Roboto', sans-serif;
-}
-
-.navbar {
-    background-color: #007bff;
 }
 
 .navbar-brand {
     font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.nav-link {
-    font-size: 1.2em;
-}
-
-.nav-link:hover {
-    color: #ffffff !important;
-    text-decoration: underline;
 }
 
 .card {
@@ -37,7 +22,6 @@ body {
 
 .table th, .table td {
     vertical-align: middle;
-    font-size: 1.1rem;
 }
 
 .table .form-check {
@@ -53,6 +37,10 @@ body {
     margin: 0 5px;
 }
 
+body, h1, h2, h3, h4, h5, h6, .navbar, .btn, .table {
+    font-family: 'Roboto', sans-serif;
+}
+
 .custom-switch-blue .custom-control-input:checked ~ .custom-control-label::before {
     background-color: #007bff;
     border-color: #007bff;
@@ -63,6 +51,19 @@ body {
     border-color: #dc3545;
 }
 
+.table th, .table td {
+    font-size: 1.1rem;
+}
+
 .font-weight-bold {
     font-weight: bold;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-content {
+    border-radius: 8px;
 }

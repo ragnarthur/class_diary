@@ -5,25 +5,69 @@
     <div class="mb-4">
         <h2 class="text-center">Desempenho de Faltas e Presenças</h2>
     </div>
-    <table class="table table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Turma</th>
-                <th>Aluno</th>
-                <th>Total de Presenças</th>
-                <th>Total de Faltas</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in desempenho %}
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar Aluno ou Turma">
+    </div>
+    <div class="table-responsive">
+        <h3 class="text-primary">Turma Matutina</h3>
+        <table class="table table-hover">
+            <thead class="thead-dark">
                 <tr>
-                    <td>{{ item.turma }}</td>
-                    <td>{{ item.aluno }}</td>
-                    <td>{{ item.total_presencas }}</td>
-                    <td>{{ item.total_faltas }}</td>
+                    <th>Turma</th>
+                    <th>Aluno</th>
+                    <th>Total de Presenças</th>
+                    <th>Total de Faltas</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="performanceTableMatutina">
+                {% for item in desempenho_matutina %}
+                    <tr class="bg-light">
+                        <td>{{ item.turma }}</td>
+                        <td>{{ item.aluno }}</td>
+                        <td>
+                            <span class="badge badge-success">
+                                <i class="fa fa-check"></i> {{ item.total_presencas }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-danger">
+                                <i class="fa fa-times"></i> {{ item.total_faltas }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3 class="text-secondary">Turma Vespertina</h3>
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Turma</th>
+                    <th>Aluno</th>
+                    <th>Total de Presenças</th>
+                    <th>Total de Faltas</th>
+                </tr>
+            </thead>
+            <tbody id="performanceTableVespertina">
+                {% for item in desempenho_vespertina %}
+                    <tr class="bg-white">
+                        <td>{{ item.turma }}</td>
+                        <td>{{ item.aluno }}</td>
+                        <td>
+                            <span class="badge badge-success">
+                                <i class="fa fa-check"></i> {{ item.total_presencas }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-danger">
+                                <i class="fa fa-times"></i> {{ item.total_faltas }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

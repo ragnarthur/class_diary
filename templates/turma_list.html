@@ -8,10 +8,42 @@
         <h4 class="text-center mt-3">{{ nome_dia|capfirst }}, {{ data_formatada }}</h4>
     </div>
 
+    <div class="text-center mb-4">
+        <button class="btn btn-secondary" data-toggle="modal" data-target="#dateModal">Selecionar Data Passada</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="dateModal" tabindex="-1" aria-labelledby="dateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dateModalLabel">Selecionar Data Passada</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="dateForm" method="get" action="{% url 'turma_list' %}">
+                        <div class="form-group">
+                            <div class="input-group date" id="datePicker">
+                                <input type="text" class="form-control" name="dia" placeholder="Selecione a data" readonly>
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary d-none">Visualizar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <form method="post" action="{% url 'save_presences_matutina' %}">
                 {% csrf_token %}
+                <input type="hidden" name="data_selecionada" value="{{ data_atual|date:'Y-m-d' }}">
                 <h3>Turma Matutina</h3>
                 {% for turma in turmas_matutina %}
                     <div class="card mb-4">
@@ -63,6 +95,7 @@
         <div class="col-md-6">
             <form method="post" action="{% url 'save_presences_vespertina' %}">
                 {% csrf_token %}
+                <input type="hidden" name="data_selecionada" value="{{ data_atual|date:'Y-m-d' }}">
                 <h3>Turma Vespertina</h3>
                 {% for turma in turmas_vespertina %}
                     <div class="card mb-4">
@@ -125,4 +158,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#datePicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
+        }).on('changeDate', function(e) {
+            $('#dateForm').submit();
+        });
+    });
+</script>
 {% endblock %}
