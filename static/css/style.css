@@ -1,5 +1,6 @@
 body {
     background-color: #f8f9fa;
+    font-family: 'Roboto', sans-serif;
 }
 
 .navbar-brand {
@@ -59,11 +60,31 @@ body, h1, h2, h3, h4, h5, h6, .navbar, .btn, .table {
     font-weight: bold;
 }
 
-.modal-header {
-    background-color: #007bff;
+.table thead th {
+    background-color: #343a40;
     color: white;
 }
 
-.modal-content {
-    border-radius: 8px;
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table .badge-success {
+    background-color: #28a745;
+    font-size: 1rem;
+}
+
+.table .badge-danger {
+    background-color: #dc3545;
+    font-size: 1rem;
+}
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+h3.text-primary, h3.text-secondary {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 2px solid #007bff;
 }

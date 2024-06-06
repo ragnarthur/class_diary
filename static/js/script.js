@@ -1,32 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchInput').addEventListener('keyup', function() {
-        var value = this.value.toLowerCase().trim();
-        var rowsMatutina = document.querySelectorAll('#performanceTableMatutina tr');
-        var rowsVespertina = document.querySelectorAll('#performanceTableVespertina tr');
+        const value = this.value.toLowerCase().trim();
 
-        rowsMatutina.forEach(function(row) {
-            var turma = row.cells[0].textContent.toLowerCase();
-            var aluno = row.cells[1].textContent.toLowerCase();
-            
-            if (turma.includes(value) || aluno.includes(value)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+        function filterTable(tableId) {
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            rows.forEach(function(row) {
+                const turma = row.querySelector('.turma').textContent.toLowerCase();
+                const aluno = row.querySelector('.aluno').textContent.toLowerCase();
+                if (turma.includes(value) || aluno.includes(value)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
 
-        rowsVespertina.forEach(function(row) {
-            var turma = row.cells[0].textContent.toLowerCase();
-            var aluno = row.cells[1].textContent.toLowerCase();
-            
-            if (turma.includes(value) || aluno.includes(value)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+        filterTable('performanceTableMatutina');
+        filterTable('performanceTableVespertina');
     });
 });
+
+
 
 $(document).ready(function(){
     $('#datePicker').datepicker({
