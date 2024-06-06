@@ -9,7 +9,6 @@ import pandas as pd
 from django.http import HttpResponse
 import calendar
 
-
 def home(request):
     return render(request, 'home.html')
 
@@ -51,26 +50,28 @@ def turma_list(request):
 
 def save_presences_matutina(request):
     if request.method == 'POST':
-        data_atual = now().date()
+        data_selecionada = request.POST.get('data_selecionada', now().date())
+        data_selecionada = datetime.strptime(data_selecionada, '%Y-%m-%d').date()
         turmas_matutina = Turma.objects.filter(nome__icontains='Matutina')
         for turma in turmas_matutina:
             for aluno in turma.alunos.all():
                 presente = request.POST.get(f'presenca_{aluno.id}') == 'on'
                 Presenca.objects.update_or_create(
-                    aluno=aluno, data=data_atual,
+                    aluno=aluno, data=data_selecionada,
                     defaults={'presente': presente}
                 )
         return redirect('turma_list')
 
 def save_presences_vespertina(request):
     if request.method == 'POST':
-        data_atual = now().date()
+        data_selecionada = request.POST.get('data_selecionada', now().date())
+        data_selecionada = datetime.strptime(data_selecionada, '%Y-%m-%d').date()
         turmas_vespertina = Turma.objects.filter(nome__icontains='Vespertina')
         for turma in turmas_vespertina:
             for aluno in turma.alunos.all():
                 presente = request.POST.get(f'presenca_{aluno.id}') == 'on'
                 Presenca.objects.update_or_create(
-                    aluno=aluno, data=data_atual,
+                    aluno=aluno, data=data_selecionada,
                     defaults={'presente': presente}
                 )
         return redirect('turma_list')
@@ -110,15 +111,30 @@ def export_presences_to_excel(request):
     return response
 
 def desempenho_presencas(request):
-    turmas = Turma.objects.all().order_by('nome')
-    desempenho = []
+    turmas_matutina = Turma.objects.filter(nome__icontains='Matutina').order_by('nome')
+    turmas_vespertina = Turma.objects.filter(nome__icontains='Vespertina').order_by('nome')
+    
+    desempenho_matutina = []
+    desempenho_vespertina = []
 
-    for turma in turmas:
+    for turma in turmas_matutina:
         alunos = turma.alunos.all().order_by('nome')
         for aluno in alunos:
             total_presencas = Presenca.objects.filter(aluno=aluno, presente=True).count()
             total_faltas = Presenca.objects.filter(aluno=aluno, presente=False).count()
-            desempenho.append({
+            desempenho_matutina.append({
+                'turma': turma.nome,
+                'aluno': aluno.nome,
+                'total_presencas': total_presencas,
+                'total_faltas': total_faltas
+            })
+
+    for turma in turmas_vespertina:
+        alunos = turma.alunos.all().order_by('nome')
+        for aluno in alunos:
+            total_presencas = Presenca.objects.filter(aluno=aluno, presente=True).count()
+            total_faltas = Presenca.objects.filter(aluno=aluno, presente=False).count()
+            desempenho_vespertina.append({
                 'turma': turma.nome,
                 'aluno': aluno.nome,
                 'total_presencas': total_presencas,
@@ -126,9 +142,11 @@ def desempenho_presencas(request):
             })
 
     context = {
-        'desempenho': desempenho
+        'desempenho_matutina': desempenho_matutina,
+        'desempenho_vespertina': desempenho_vespertina
     }
     return render(request, 'desempenho_presencas.html', context)
+
 
 def alunos_atendidos_por_mes(request):
     current_time = localtime(now())
