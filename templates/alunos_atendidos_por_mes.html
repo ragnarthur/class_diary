@@ -4,26 +4,42 @@
 <div class="container">
     <div class="mb-4">
         <h2 class="text-center">Alunos Atendidos por Mês</h2>
-        <h4 class="text-center mt-3">Período: {{ start_date }} a {{ end_date }}</h4>
+        <h4 class="text-center mt-3">Período: {{ start_date|date:"d/m/Y" }} a {{ end_date|date:"d/m/Y" }}</h4>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>Turma Matutina</h4>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="my-0">Turma Matutina</h4>
                 </div>
                 <div class="card-body">
-                    <p>Total de Alunos Atendidos: {{ atendidos_matutina }}</p>
+                    <p class="card-text display-4 text-center">
+                        <i class="fas fa-user-graduate"></i>
+                    </p>
+                    <p class="card-text text-center font-weight-bold" style="font-size: 1.5rem;">
+                        Total de Alunos Atendidos
+                    </p>
+                    <p class="card-text display-4 text-center">
+                        {{ atendidos_matutina }}
+                    </p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>Turma Vespertina</h4>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="my-0">Turma Vespertina</h4>
                 </div>
                 <div class="card-body">
-                    <p>Total de Alunos Atendidos: {{ atendidos_vespertina }}</p>
+                    <p class="card-text display-4 text-center">
+                        <i class="fas fa-user-graduate"></i>
+                    </p>
+                    <p class="card-text text-center font-weight-bold" style="font-size: 1.5rem;">
+                        Total de Alunos Atendidos
+                    </p>
+                    <p class="card-text display-4 text-center">
+                        {{ atendidos_vespertina }}
+                    </p>
                 </div>
             </div>
         </div>

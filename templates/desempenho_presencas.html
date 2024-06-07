@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
 <div class="container">
     <div class="mb-4">
         <h2 class="text-center">Desempenho de Faltas e Presenças</h2>
-        <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar aluno ou turma">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="data:image/png;base64,{{ grafico_base64 }}" class="img-fluid" alt="Gráfico de Pizza">
+            </div>
+            <div class="col-md-6">
+                <img src="data:image/png;base64,{{ grafico_barras_base64 }}" class="img-fluid" alt="Gráfico de Barras">
+            </div>
+        </div>
+        <input type="text" id="searchInput" class="form-control mt-3" placeholder="Pesquisar aluno ou turma">
     </div>
     <div class="table-responsive">
         <h3 class="text-primary">Turma Matutina</h3>

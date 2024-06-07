@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <!-- Bootstrap Datepicker CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -33,35 +35,36 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="#">CRAS Diário</a>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <a class="navbar-brand" href="#"><i class="fas fa-school"></i> CRAS Diário</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'turma_list' %}">Diário de Turmas</a>
+                    <a class="nav-link" href="{% url 'turma_list' %}"><i class="fas fa-book"></i> Diário de Turmas</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'desempenho_presencas' %}"><i class="fas fa-chart-bar"></i> Desempenho de Presenças</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'desempenho_presencas' %}">Desempenho de Presenças</a>
+                    <a class="nav-link" href="{% url 'alunos_atendidos_por_mes' %}"><i class="fas fa-user-graduate"></i> Alunos Atendidos por Mês</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'alunos_atendidos_por_mes' %}">Alunos Atendidos por Mês</a>
+                    <a class="nav-link" href="{% url 'sobre' %}"><i class="fas fa-info-circle"></i> Sobre</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'sobre' %}">Sobre</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'professores' %}">Professores</a>
+                    <a class="nav-link" href="{% url 'professores' %}"><i class="fas fa-chalkboard-teacher"></i> Professores</a>
                 </li>
             </ul>
         </div>
     </nav>
-    <div class="container mt-4">
+    <div class="container mt-5 pt-3">
         {% block content %}
         {% endblock %}
     </div>
@@ -72,6 +75,8 @@
     <!-- Bootstrap Datepicker JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         $(document).ready(function(){
             $('#datePicker').datepicker({
@@ -85,5 +90,6 @@
         });
     </script>
     <script src="{% static 'js/script.js' %}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
