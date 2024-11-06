@@ -1,0 +1,38 @@
+﻿# Arquivos de sistema
+__pycache__/
+*.py[cod]
+*.so
+
+# Ambiente virtual
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# Configurações de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de log e temporários
+*.log
+*.tmp
+*.temp
+*.pid
+
+# Arquivo de ambiente com credenciais e configurações sensíveis
+*.env
+
+# Arquivos de banco de dados locais
+*.sqlite3
+*.db
+
+# Arquivos e diretórios criados por ferramentas de distribuição
+dist/
+build/
+*.egg-info/
+
+# Arquivos de sistema macOS
+.DS_Store

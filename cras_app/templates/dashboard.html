@@ -1,0 +1,22 @@
+﻿{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <div class="columns is-centered">
+    <div class="column is-three-quarters">
+      <h1 class="title has-text-centered">Dashboard de Frequência</h1>
+      <div class="columns">
+        {% for unit, data in dashboard_data.items() %}
+          <div class="column">
+            <div class="box has-text-centered">
+              <h2 class="subtitle">{{ unit }}</h2>
+              <p><strong>Total de Alunos:</strong> {{ data.total }}</p>
+              <p><strong>Presentes:</strong> {{ data.presentes }}</p>
+              <p><strong>Ausentes:</strong> {{ data.ausentes }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

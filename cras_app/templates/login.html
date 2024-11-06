@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+  <div class="columns is-centered">
+    <div class="column is-half">
+      <h1 class="title has-text-centered">Entrar</h1>
+      <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="field">
+          {{ form.username.label(class="label") }}
+          <div class="control">
+            {{ form.username(class="input", placeholder="Usuário") }}
+          </div>
+        </div>
+        <div class="field">
+          {{ form.password.label(class="label") }}
+          <div class="control">
+            {{ form.password(class="input", placeholder="Senha") }}
+          </div>
+        </div>
+        <div class="field">
+          <label class="checkbox">
+            {{ form.remember_me }} Lembrar-me
+          </label>
+        </div>
+        <div class="control">
+          <button type="submit" class="button is-primary is-fullwidth">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

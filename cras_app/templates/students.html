@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8">
+    <title>Lista de Alunos - CRAS Diário</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  </head>
+  <body>
+    <nav class="navbar is-primary">
+      <div class="container">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="{{ url_for('main.index') }}">CRAS Diário</a>
+        </div>
+        <div id="navbarMenu" class="navbar-menu">
+          <div class="navbar-end">
+            <a class="navbar-item" href="{{ url_for('main.index') }}">Início</a>
+            <a class="navbar-item" href="{{ url_for('main.add_student') }}">Adicionar Aluno</a>
+            <a class="navbar-item" href="{{ url_for('main.students') }}">Lista de Alunos</a>
+            <a class="navbar-item" href="{{ url_for('main.logout') }}">Sair</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <section class="section">
+      <div class="container">
+        <h1 class="title has-text-centered">Lista de Alunos</h1>
+
+        <!-- Exibição de Data e Hora Atual -->
+        <div class="has-text-centered my-4">
+          <p id="current-datetime" class="has-text-weight-semibold is-size-5"></p>
+        </div>
+
+        <!-- Campo para seleção de data -->
+        <div class="field is-grouped is-centered">
+          <p class="control">
+            <input type="date" id="attendance-date" class="input" max="{{ today }}" placeholder="Selecione uma data">
+          </p>
+          <p class="control">
+            <button id="view-attendance" class="button is-info">Ver Diário</button>
+          </p>
+        </div>
+
+        <!-- Abas para selecionar as unidades -->
+        <div class="tabs is-centered is-boxed">
+          <ul>
+            <li class="is-active" data-tab="santa-rita"><a>Santa Rita</a></li>
+            <li data-tab="vila-nova"><a>Vila Nova</a></li>
+            <li data-tab="celso-bueno"><a>Celso Bueno</a></li>
+          </ul>
+        </div>
+
+        <!-- Conteúdo de cada unidade (exibido de acordo com a aba selecionada) -->
+        <div class="tab-content">
+          <!-- Santa Rita -->
+          <div id="santa-rita" class="tab-pane is-active">
+            <h2 class="subtitle">Santa Rita</h2>
+            <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Matutino</h3>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Presença</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in santa_rita_students if student.class_shift == 'Matutina' %}
+                    <tr data-student-id="{{ student.id }}">
+                      <td class="student-name">{{ student.name }}</td>
+                      <td>{{ student.class_shift }}</td>
+                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td>
+                        <button class="button is-success is-small mark-present">Presente</button>
+                        <button class="button is-danger is-small mark-absent">Ausente</button>
+                        <form action="{{ url_for('main.delete_student', student_id=student.id) }}" method="post" style="display:inline;">
+                          <button type="submit" class="button is-small is-warning">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Excluir</span>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Vespertino</h3>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Presença</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in santa_rita_students if student.class_shift == 'Vespertina' %}
+                    <tr data-student-id="{{ student.id }}">
+                      <td class="student-name">{{ student.name }}</td>
+                      <td>{{ student.class_shift }}</td>
+                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td>
+                        <button class="button is-success is-small mark-present">Presente</button>
+                        <button class="button is-danger is-small mark-absent">Ausente</button>
+                        <form action="{{ url_for('main.delete_student', student_id=student.id) }}" method="post" style="display:inline;">
+                          <button type="submit" class="button is-small is-warning">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Excluir</span>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Vila Nova -->
+          <div id="vila-nova" class="tab-pane">
+            <h2 class="subtitle">Vila Nova</h2>
+            <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Matutino</h3>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Presença</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in vila_nova_students if student.class_shift == 'Matutina' %}
+                    <tr data-student-id="{{ student.id }}">
+                      <td class="student-name">{{ student.name }}</td>
+                      <td>{{ student.class_shift }}</td>
+                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td>
+                        <button class="button is-success is-small mark-present">Presente</button>
+                        <button class="button is-danger is-small mark-absent">Ausente</button>
+                        <form action="{{ url_for('main.delete_student', student_id=student.id) }}" method="post" style="display:inline;">
+                          <button type="submit" class="button is-small is-warning">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Excluir</span>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Vespertino</h3>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Presença</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in vila_nova_students if student.class_shift == 'Vespertina' %}
+                    <tr data-student-id="{{ student.id }}">
+                      <td class="student-name">{{ student.name }}</td>
+                      <td>{{ student.class_shift }}</td>
+                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td>
+                        <button class="button is-success is-small mark-present">Presente</button>
+                        <button class="button is-danger is-small mark-absent">Ausente</button>
+                        <form action="{{ url_for('main.delete_student', student_id=student.id) }}" method="post" style="display:inline;">
+                          <button type="submit" class="button is-small is-warning">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Excluir</span>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Celso Bueno -->
+          <div id="celso-bueno" class="tab-pane">
+            <h2 class="subtitle">Celso Bueno</h2>
+            <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Matutino</h3>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Presença</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in celso_bueno_students if student.class_shift == 'Matutina' %}
+                    <tr data-student-id="{{ student.id }}">
+                      <td class="student-name">{{ student.name }}</td>
+                      <td>{{ student.class_shift }}</td>
+                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td>
+                        <button class="button is-success is-small mark-present">Presente</button>
+                        <button class="button is-danger is-small mark-absent">Ausente</button>
+                        <form action="{{ url_for('main.delete_student', student_id=student.id) }}" method="post" style="display:inline;">
+                          <button type="submit" class="button is-small is-warning">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Excluir</span>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Vespertino</h3>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Presença</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in celso_bueno_students if student.class_shift == 'Vespertina' %}
+                    <tr data-student-id="{{ student.id }}">
+                      <td class="student-name">{{ student.name }}</td>
+                      <td>{{ student.class_shift }}</td>
+                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td>
+                        <button class="button is-success is-small mark-present">Presente</button>
+                        <button class="button is-danger is-small mark-absent">Ausente</button>
+                        <form action="{{ url_for('main.delete_student', student_id=student.id) }}" method="post" style="display:inline;">
+                          <button type="submit" class="button is-small is-warning">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Excluir</span>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+  </body>
+</html>

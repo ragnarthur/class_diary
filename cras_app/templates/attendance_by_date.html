@@ -1,0 +1,26 @@
+﻿<table class="table is-striped is-fullwidth">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Turno</th>
+        <th>Data</th>
+        <th>Horário</th>
+        <th>Presença</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for unit, students in students_by_unit.items() %}
+        <tr><th colspan="5">{{ unit }}</th></tr>
+        {% for student in students %}
+          <tr>
+            <td>{{ student['name'] }}</td>
+            <td>{{ student['class_shift'] }}</td>
+            <td>{{ attendance_date }}</td>
+            <td>{{ student['attendance_time'] }}</td>  <!-- Exibe o horário -->
+            <td>{{ student['attendance_status'] }}</td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+  

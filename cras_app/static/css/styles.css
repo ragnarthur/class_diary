@@ -1,0 +1,119 @@
+﻿/* ============================================
+   Ajuste de cores para tons mais suaves
+============================================ */
+body {
+    background-color: #f8f9fa;
+}
+
+/* ============================================
+   Navbar fixa
+============================================ */
+.navbar.is-primary {
+    background-color: #2a4d69 !important;
+    font-size: 1.2rem;
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.section {
+    padding-top: 5rem;
+}
+
+/* ============================================
+   Botões de ação
+============================================ */
+.button.is-small {
+    width: 80px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button.is-warning {
+    background-color: #ffc107 !important;
+    color: #ffffff !important;
+}
+
+.button.is-warning .icon {
+    margin-right: 5px;
+}
+
+/* ============================================
+   Tabelas
+============================================ */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #007bff;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* ============================================
+   Abas de navegação (tabs)
+============================================ */
+.tabs .is-active a {
+    color: #fff !important;
+    background-color: #3b82a0 !important;
+}
+
+/* Abas conteúdo */
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.is-active {
+    display: block;
+}
+
+/* ============================================
+   Formulário de Adicionar Aluno
+============================================ */
+/* Estilo do box de formulário */
+.box {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Sombra leve para o box */
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+/* Label dos campos do formulário */
+.label {
+    font-weight: bold;
+    color: #4a4a4a;
+}
+
+/* Inputs com bordas arredondadas */
+.input.is-medium,
+.select.is-medium {
+    border-radius: 5px;
+}
+
+/* Botão de submit no formulário */
+.button.is-success {
+    background-color: #3b82a0;
+    color: #ffffff;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.button.is-success:hover {
+    background-color: #35798e;
+}
+
+/* ============================================
+   Texto em letras maiúsculas
+============================================ */
+.student-name, .unit-name {
+    text-transform: uppercase;
+}

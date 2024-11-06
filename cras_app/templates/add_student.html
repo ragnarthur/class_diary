@@ -1,0 +1,35 @@
+﻿{% extends "base.html" %}
+{% block title %}Adicionar Aluno{% endblock %}
+{% block content %}
+  <div class="columns is-centered">
+    <div class="column is-half">
+      <h1 class="title has-text-centered">Adicionar Novo Aluno</h1>
+      <div class="box">
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="field">
+            {{ form.name.label(class="label") }}
+            <div class="control">
+              {{ form.name(class="input is-medium", placeholder="Nome do Aluno") }}
+            </div>
+          </div>
+          <div class="field">
+            {{ form.unit.label(class="label") }}
+            <div class="control">
+              {{ form.unit(class="select is-medium") }}
+            </div>
+          </div>
+          <div class="field">
+            {{ form.class_shift.label(class="label") }}
+            <div class="control">
+              {{ form.class_shift(class="select is-medium") }}
+            </div>
+          </div>
+          <div class="control">
+            <button type="submit" class="button is-success is-fullwidth">{{ form.submit.label.text }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

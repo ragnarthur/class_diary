@@ -1,0 +1,24 @@
+﻿{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block content %}
+  <div class="columns">
+    <div class="column is-half">
+      <div class="card">
+        <div class="card-content has-text-centered">
+          <h5 class="title is-5">Adicionar Novo Aluno</h5>
+          <p>Cadastre novos alunos no sistema.</p>
+          <a href="{{ url_for('main.add_student') }}" class="button is-primary">Adicionar Aluno</a>
+        </div>
+      </div>
+    </div>
+    <div class="column is-half">
+      <div class="card">
+        <div class="card-content has-text-centered">
+          <h5 class="title is-5">Visualizar Alunos</h5>
+          <p>Veja a lista de alunos cadastrados.</p>
+          <a href="{{ url_for('main.students') }}" class="button is-link">Lista de Alunos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
