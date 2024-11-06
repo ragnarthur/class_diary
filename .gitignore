@@ -1,4 +1,6 @@
-﻿.venv/
+﻿# Ambiente virtual
+.venv/
+
 
 # Arquivo de ambiente com credenciais e configurações sensíveis
 *.env
