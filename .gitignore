@@ -1,5 +1,7 @@
 ﻿.venv/
 
-.env
+# Arquivo de ambiente com credenciais e configurações sensíveis
+*.env
+
 
 app.db
