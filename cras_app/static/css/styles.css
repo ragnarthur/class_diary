@@ -1,15 +1,28 @@
 ﻿/* ============================================
+   Definição de variáveis de cores para consistência
+============================================ */
+:root {
+    --primary-color: #2a4d69;
+    --secondary-color: #007bff;
+    --success-color: #3b82a0;
+    --warning-color: #ffc107;
+    --danger-color: #e74c3c;
+    --text-color-dark: #4a4a4a;
+    --background-color: #f8f9fa;
+}
+
+/* ============================================
    Ajuste de cores para tons mais suaves
 ============================================ */
 body {
-    background-color: #f8f9fa;
+    background-color: var(--background-color);
 }
 
 /* ============================================
    Navbar fixa
 ============================================ */
 .navbar.is-primary {
-    background-color: #2a4d69 !important;
+    background-color: var(--primary-color) !important;
     font-size: 1.2rem;
     padding: 1rem;
     position: fixed;
@@ -27,21 +40,44 @@ body {
 /* ============================================
    Botões de ação
 ============================================ */
-.button.is-small {
-    width: 80px;
-    padding: 5px 10px;
+.button {
     border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: bold;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.3s, filter 0.3s;
+}
+
+.button:hover {
+    filter: brightness(0.9);
+}
+
+.button.is-small {
+    width: 80px;
+}
+
+.button.is-success {
+    background-color: var(--success-color);
+    color: #ffffff;
+}
+
+.button.is-success:hover {
+    background-color: #35798e;
 }
 
 .button.is-warning {
-    background-color: #ffc107 !important;
+    background-color: var(--warning-color) !important;
     color: #ffffff !important;
 }
 
-.button.is-warning .icon {
+.button.is-danger {
+    background-color: var(--danger-color);
+    color: #ffffff;
+}
+
+.button .icon {
     margin-right: 5px;
 }
 
@@ -52,23 +88,39 @@ body {
     background-color: #ffffff;
     border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 2rem; /* Adicionado para espaçamento entre elementos */
+}
+
+.table {
+    width: 100%;
 }
 
 .table thead th {
-    background-color: #007bff;
+    background-color: var(--secondary-color);
     color: #ffffff;
     font-weight: bold;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
 /* ============================================
    Abas de navegação (tabs)
 ============================================ */
+.tabs {
+    margin-bottom: 1rem; /* Adicionado espaçamento */
+}
+
 .tabs .is-active a {
     color: #fff !important;
     background-color: #3b82a0 !important;
 }
 
-/* Abas conteúdo */
 .tab-pane {
     display: none;
 }
@@ -80,35 +132,20 @@ body {
 /* ============================================
    Formulário de Adicionar Aluno
 ============================================ */
-/* Estilo do box de formulário */
 .box {
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Sombra leve para o box */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 2rem;
 }
 
-/* Label dos campos do formulário */
 .label {
     font-weight: bold;
-    color: #4a4a4a;
+    color: var(--text-color-dark);
 }
 
-/* Inputs com bordas arredondadas */
 .input.is-medium,
 .select.is-medium {
     border-radius: 5px;
-}
-
-/* Botão de submit no formulário */
-.button.is-success {
-    background-color: #3b82a0;
-    color: #ffffff;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.button.is-success:hover {
-    background-color: #35798e;
 }
 
 /* ============================================
@@ -116,4 +153,27 @@ body {
 ============================================ */
 .student-name, .unit-name {
     text-transform: uppercase;
+}
+
+/* ============================================
+   Ajustes de responsividade
+============================================ */
+@media screen and (max-width: 768px) {
+    .navbar.is-primary {
+        font-size: 1rem;
+    }
+
+    .button {
+        padding: 4px 8px;
+        width: auto;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .tabs.is-centered ul {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }

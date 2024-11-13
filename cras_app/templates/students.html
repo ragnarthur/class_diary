@@ -27,19 +27,23 @@
       <div class="container">
         <h1 class="title has-text-centered">Lista de Alunos</h1>
 
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="notification-container">
+              {% for category, message in messages %}
+                <div class="notification is-{{ category }}">
+                  <button class="delete"></button>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
         <!-- Exibição de Data e Hora Atual -->
         <div class="has-text-centered my-4">
           <p id="current-datetime" class="has-text-weight-semibold is-size-5"></p>
-        </div>
-
-        <!-- Campo para seleção de data -->
-        <div class="field is-grouped is-centered">
-          <p class="control">
-            <input type="date" id="attendance-date" class="input" max="{{ today }}" placeholder="Selecione uma data">
-          </p>
-          <p class="control">
-            <button id="view-attendance" class="button is-info">Ver Diário</button>
-          </p>
         </div>
 
         <!-- Abas para selecionar as unidades -->
@@ -72,7 +76,7 @@
                     <tr data-student-id="{{ student.id }}">
                       <td class="student-name">{{ student.name }}</td>
                       <td>{{ student.class_shift }}</td>
-                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td class="attendance-status">{{ student.attendance_status if student.attendance_status else '' }}</td>
                       <td>
                         <button class="button is-success is-small mark-present">Presente</button>
                         <button class="button is-danger is-small mark-absent">Ausente</button>
@@ -88,7 +92,6 @@
                 </tbody>
               </table>
             </div>
-
             <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Vespertino</h3>
             <div class="table-container">
               <table class="table is-striped is-fullwidth">
@@ -105,7 +108,7 @@
                     <tr data-student-id="{{ student.id }}">
                       <td class="student-name">{{ student.name }}</td>
                       <td>{{ student.class_shift }}</td>
-                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td class="attendance-status">{{ student.attendance_status if student.attendance_status else '' }}</td>
                       <td>
                         <button class="button is-success is-small mark-present">Presente</button>
                         <button class="button is-danger is-small mark-absent">Ausente</button>
@@ -142,7 +145,7 @@
                     <tr data-student-id="{{ student.id }}">
                       <td class="student-name">{{ student.name }}</td>
                       <td>{{ student.class_shift }}</td>
-                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td class="attendance-status">{{ student.attendance_status if student.attendance_status else '' }}</td>
                       <td>
                         <button class="button is-success is-small mark-present">Presente</button>
                         <button class="button is-danger is-small mark-absent">Ausente</button>
@@ -158,7 +161,6 @@
                 </tbody>
               </table>
             </div>
-
             <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Vespertino</h3>
             <div class="table-container">
               <table class="table is-striped is-fullwidth">
@@ -175,7 +177,7 @@
                     <tr data-student-id="{{ student.id }}">
                       <td class="student-name">{{ student.name }}</td>
                       <td>{{ student.class_shift }}</td>
-                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td class="attendance-status">{{ student.attendance_status if student.attendance_status else '' }}</td>
                       <td>
                         <button class="button is-success is-small mark-present">Presente</button>
                         <button class="button is-danger is-small mark-absent">Ausente</button>
@@ -212,7 +214,7 @@
                     <tr data-student-id="{{ student.id }}">
                       <td class="student-name">{{ student.name }}</td>
                       <td>{{ student.class_shift }}</td>
-                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td class="attendance-status">{{ student.attendance_status if student.attendance_status else '' }}</td>
                       <td>
                         <button class="button is-success is-small mark-present">Presente</button>
                         <button class="button is-danger is-small mark-absent">Ausente</button>
@@ -228,7 +230,6 @@
                 </tbody>
               </table>
             </div>
-
             <h3 class="is-size-5 mt-3 has-text-weight-semibold">Turno Vespertino</h3>
             <div class="table-container">
               <table class="table is-striped is-fullwidth">
@@ -245,7 +246,7 @@
                     <tr data-student-id="{{ student.id }}">
                       <td class="student-name">{{ student.name }}</td>
                       <td>{{ student.class_shift }}</td>
-                      <td class="attendance-status">{{ student.attendance_status or '&nbsp;' }}</td>
+                      <td class="attendance-status">{{ student.attendance_status if student.attendance_status else '' }}</td>
                       <td>
                         <button class="button is-success is-small mark-present">Presente</button>
                         <button class="button is-danger is-small mark-absent">Ausente</button>
@@ -263,9 +264,25 @@
             </div>
           </div>
         </div>
+
+        <!-- Botão para salvar presenças -->
+        <div class="has-text-centered mt-4">
+          <button id="save-attendance" class="button is-primary">Salvar Presenças/Faltas</button>
+        </div>
       </div>
     </section>
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script>
+      // Script para fechar notificações ao clicar no botão de fechar
+      document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+          const $notification = $delete.parentNode;
+          $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+          });
+        });
+      });
+    </script>
   </body>
 </html>

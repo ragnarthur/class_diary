@@ -2,11 +2,11 @@
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
-from urllib.parse import urlparse  # Importa urlparse para corrigir o erro
+from urllib.parse import urlparse
 from cras_app.extensions import db
 from .forms import LoginForm, AddStudentForm
-from .models import User, Student, Attendance  # Corrigido para incluir o modelo Attendance
-from datetime import date, datetime  # Certifique-se de importar date para manipular datas
+from .models import User, Student, Attendance
+from datetime import date, datetime
 
 bp = Blueprint('main', __name__)
 
@@ -30,7 +30,6 @@ def login():
         login_user(user, remember=form.remember_me.data)
         flash('Login realizado com sucesso!', 'is-primary')
 
-        # Redireciona para a URL original (se houver)
         next_page = request.args.get('next')
         if next_page and urlparse(next_page).netloc == '':
             return redirect(next_page)
@@ -53,14 +52,14 @@ def add_student():
     form = AddStudentForm()
     if form.validate_on_submit():
         student = Student(
-            name=form.name.data,
+            name=form.name.data.upper(),
             unit=form.unit.data,
             class_shift=form.class_shift.data
         )
         db.session.add(student)
         db.session.commit()
         flash('Aluno adicionado com sucesso!', 'is-success')
-        return redirect(url_for('main.students'))
+        return redirect(url_for('main.add_student'))
     return render_template('add_student.html', title='Adicionar Aluno', form=form)
 
 # Rota para visualizar os alunos separados por unidade e em ordem alfabética
@@ -71,27 +70,17 @@ def students():
     vila_nova_students = Student.query.filter_by(unit='Vila Nova').order_by(Student.name).all()
     celso_bueno_students = Student.query.filter_by(unit='Celso Bueno').order_by(Student.name).all()
 
-    # Passando a data de hoje para o template
-    today = date.today()
+    for student in santa_rita_students + vila_nova_students + celso_bueno_students:
+        latest_attendance = Attendance.query.filter_by(student_id=student.id).order_by(Attendance.attendance_date.desc()).first()
+        student.attendance_status = latest_attendance.status if latest_attendance else None
 
     return render_template(
         'students.html', 
         title='Lista de Alunos',
         santa_rita_students=santa_rita_students,
         vila_nova_students=vila_nova_students,
-        celso_bueno_students=celso_bueno_students,
-        today=today  # Inclua a data de hoje no contexto
+        celso_bueno_students=celso_bueno_students
     )
-
-# Rota para excluir um aluno
-@bp.route('/delete_student/<int:student_id>', methods=['POST'])
-@login_required
-def delete_student(student_id):
-    student = Student.query.get_or_404(student_id)
-    db.session.delete(student)
-    db.session.commit()
-    flash('Aluno excluído com sucesso!', 'is-danger')
-    return redirect(url_for('main.students'))
 
 # Rota para atualizar o status de presença de um aluno
 @bp.route('/update_attendance/<int:student_id>', methods=['POST'])
@@ -100,37 +89,113 @@ def update_attendance(student_id):
     student = Student.query.get_or_404(student_id)
     data = request.get_json()
     if 'attendance_status' in data:
-        # Cria ou atualiza o registro de presença com data e horário
         attendance = Attendance.query.filter_by(
             student_id=student.id, 
             attendance_date=date.today()
         ).first()
         if attendance:
             attendance.status = data['attendance_status']
-            attendance.attendance_time = datetime.utcnow().time()  # Atualiza o horário
+            attendance.attendance_time = datetime.utcnow().time()
         else:
             attendance = Attendance(
                 student_id=student.id, 
                 status=data['attendance_status'], 
                 attendance_date=date.today(),
-                attendance_time=datetime.utcnow().time()  # Define o horário no novo registro
+                attendance_time=datetime.utcnow().time()
             )
             db.session.add(attendance)
         db.session.commit()
-        return jsonify({'success': True}), 200
+        flash('Presenças salvas com sucesso!', 'primary')
+        return jsonify({'success': True, 'status': attendance.status}), 200
     return jsonify({'success': False}), 400
+
+# Rota para salvar presenças
+@bp.route('/save_attendance', methods=['POST'])
+@login_required
+def save_attendance():
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'message': 'Nenhum dado recebido'}), 400
+
+    try:
+        for student_id, status in data.items():
+            student = Student.query.get(student_id)
+            if not student:
+                continue
+
+            attendance = Attendance.query.filter_by(
+                student_id=student.id, 
+                attendance_date=date.today()
+            ).first()
+            if attendance:
+                attendance.status = status
+                attendance.attendance_time = datetime.utcnow().time()
+            else:
+                attendance = Attendance(
+                    student_id=student.id,
+                    status=status,
+                    attendance_date=date.today(),
+                    attendance_time=datetime.utcnow().time()
+                )
+                db.session.add(attendance)
+
+        db.session.commit()
+        return jsonify({'success': True}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# Rota para excluir um aluno
+@bp.route('/delete_student/<int:student_id>', methods=['POST'])
+@login_required
+def delete_student(student_id):
+    student = Student.query.get_or_404(student_id)
+    
+    # Exclua todas as presenças associadas ao aluno antes de excluir o aluno
+    Attendance.query.filter_by(student_id=student.id).delete()
+    
+    db.session.delete(student)
+    db.session.commit()
+    
+    flash('Aluno excluído com sucesso!', 'is-danger')
+    return redirect(url_for('main.students'))
+
+# Rota para visualizar presenças acumuladas até o momento
+@bp.route('/attendance_summary')
+@login_required
+def attendance_summary():
+    all_attendances = Attendance.query.order_by(Attendance.attendance_date.desc()).all()
+    summary_by_unit = {
+        'Santa Rita': {},
+        'Vila Nova': {},
+        'Celso Bueno': {}
+    }
+    for attendance in all_attendances:
+        student = attendance.student
+        date_key = attendance.attendance_date.strftime('%Y-%m-%d')
+        if date_key not in summary_by_unit[student.unit]:
+            summary_by_unit[student.unit][date_key] = []
+        summary_by_unit[student.unit][date_key].append({
+            'name': student.name,
+            'class_shift': student.class_shift,
+            'attendance_date': attendance.attendance_date,
+            'status': attendance.status
+        })
+
+    return render_template(
+        'attendance_summary.html',
+        title='Resumo de Presenças',
+        summary_by_unit=summary_by_unit
+    )
 
 # Rota para consultar presença por data
 @bp.route('/attendance/<string:attendance_date>')
 @login_required
 def attendance_by_date(attendance_date):
-    # Converter a data de string para o tipo `date`
     attendance_date = date.fromisoformat(attendance_date)
-    
-    # Consulta todos os registros de presença para a data fornecida
     attendance_records = Attendance.query.filter_by(attendance_date=attendance_date).all()
-    
-    # Organiza os registros por unidade e turno
     students_by_unit = {
         'Santa Rita': [],
         'Vila Nova': [],
@@ -142,7 +207,7 @@ def attendance_by_date(attendance_date):
             'name': student.name,
             'class_shift': student.class_shift,
             'attendance_status': record.status,
-            'attendance_time': record.attendance_time.strftime('%H:%M')  # Formata o horário para exibição
+            'attendance_time': record.attendance_time.strftime('%H:%M')
         })
     
     return render_template(
@@ -156,7 +221,6 @@ def attendance_by_date(attendance_date):
 @bp.route('/dashboard')
 @login_required
 def dashboard():
-    # Agrega as informações de presença por unidade
     dashboard_data = {
         "Santa Rita": {"total": 0, "presentes": 0, "ausentes": 0},
         "Vila Nova": {"total": 0, "presentes": 0, "ausentes": 0},

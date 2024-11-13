@@ -1,5 +1,11 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
-    const attendanceSummary = { present: 0, absent: 0 };
+    // Função para garantir que o input de nome seja sempre em maiúsculas
+    const nameInput = document.querySelector('.name-input');
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    }
 
     // Função para atualizar a presença no servidor
     function updateAttendanceOnServer(studentId, status) {
@@ -10,7 +16,12 @@
             },
             body: JSON.stringify({ attendance_status: status })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erro na solicitação: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 console.log('Status de presença atualizado com sucesso.');
@@ -18,21 +29,25 @@
                 console.log('Erro ao atualizar o status de presença.');
             }
         })
-        .catch(error => console.error('Erro:', error));
+        .catch(error => console.error('Erro na atualização de presença:', error));
     }
 
     // Botões de presença e ausência
+    const attendanceData = {};
+
     document.querySelectorAll('.mark-present').forEach(button => {
         button.addEventListener('click', function() {
             const row = this.closest('tr');
             const studentId = row.getAttribute('data-student-id');
+            if (!studentId) {
+                console.error('ID do aluno não encontrado para a linha selecionada.');
+                return;
+            }
             row.classList.add('present');
             row.classList.remove('absent');
             row.querySelector('.attendance-status').textContent = 'Presente';
-            attendanceSummary.present += 1;
-            if (attendanceSummary.absent > 0) attendanceSummary.absent -= 1;
+            attendanceData[studentId] = 'Presente';
             updateAttendanceOnServer(studentId, 'Presente');
-            updateAttendanceSummary();
         });
     });
 
@@ -40,23 +55,58 @@
         button.addEventListener('click', function() {
             const row = this.closest('tr');
             const studentId = row.getAttribute('data-student-id');
+            if (!studentId) {
+                console.error('ID do aluno não encontrado para a linha selecionada.');
+                return;
+            }
             row.classList.add('absent');
             row.classList.remove('present');
             row.querySelector('.attendance-status').textContent = 'Ausente';
-            attendanceSummary.absent += 1;
-            if (attendanceSummary.present > 0) attendanceSummary.present -= 1;
+            attendanceData[studentId] = 'Ausente';
             updateAttendanceOnServer(studentId, 'Ausente');
-            updateAttendanceSummary();
         });
     });
 
-    // Atualiza o resumo de frequência
-    function updateAttendanceSummary() {
-        const summaryDiv = document.getElementById('attendance-summary');
-        summaryDiv.innerHTML = `
-            <p>Presentes: ${attendanceSummary.present}</p>
-            <p>Ausentes: ${attendanceSummary.absent}</p>
-        `;
+    // Função para salvar presenças ao clicar no botão
+    const saveButton = document.getElementById('save-attendance');
+    if (saveButton) {
+        saveButton.addEventListener('click', function() {
+            fetch('/save_attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(attendanceData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erro na solicitação: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const successMessage = document.getElementById('success-message');
+                    if (successMessage) {
+                        successMessage.classList.remove('is-hidden');
+                        setTimeout(() => {
+                            successMessage.classList.add('is-hidden');
+                            // Redireciona para a página inicial após 3 segundos
+                            window.location.href = '/';
+                        }, 3000);
+                    } else {
+                        // Redireciona imediatamente se a mensagem de sucesso não for encontrada
+                        window.location.href = '/';
+                    }
+                } else {
+                    alert('Erro ao salvar as presenças.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao salvar presenças:', error);
+                alert('Erro ao salvar as presenças.');
+            });
+        });
     }
 
     // Função para alternância de abas
@@ -68,7 +118,13 @@
             tabs.forEach(t => t.classList.remove('is-active'));
             tabPanes.forEach(pane => pane.classList.remove('is-active'));
             tab.classList.add('is-active');
-            document.getElementById(tab.dataset.tab).classList.add('is-active');
+            const paneId = tab.dataset.tab;
+            const activePane = document.getElementById(paneId);
+            if (activePane) {
+                activePane.classList.add('is-active');
+            } else {
+                console.warn(`Pane com ID "${paneId}" não encontrado.`);
+            }
         });
     });
 
@@ -92,49 +148,4 @@
 
     setInterval(updateDateTime, 1000);
     updateDateTime();
-
-    // Verificação e atualização do diário por data
-    const viewAttendanceButton = document.getElementById('view-attendance');
-    const attendanceDateInput = document.getElementById('attendance-date');
-
-    viewAttendanceButton.addEventListener('click', function () {
-        const selectedDate = attendanceDateInput.value;
-        if (selectedDate) {
-            window.location.href = `/students?attendance_date=${selectedDate}`;
-        } else {
-            alert("Por favor, selecione uma data para consulta.");
-        }
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Função para atualizar o resumo do dashboard em tempo real (por AJAX)
-    function updateDashboard() {
-        fetch('/api/dashboard_data')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('santa-rita-total').textContent = data.santa_rita.total;
-                document.getElementById('santa-rita-presentes').textContent = data.santa_rita.presentes;
-                document.getElementById('santa-rita-ausentes').textContent = data.santa_rita.ausentes;
-                // Repita para as outras unidades, se necessário
-            })
-            .catch(error => console.error('Erro ao atualizar o dashboard:', error));
-    }
-    
-    // Atualiza o dashboard a cada 10 segundos
-    setInterval(updateDashboard, 10000);
-    updateDashboard(); // Chamada inicial
-
-    // Navegação do dashboard para consultas por data
-    const viewAttendanceButton = document.getElementById('view-attendance');
-    const attendanceDateInput = document.getElementById('attendance-date');
-
-    viewAttendanceButton.addEventListener('click', function () {
-        const selectedDate = attendanceDateInput.value;
-        if (selectedDate) {
-            window.location.href = `/students?attendance_date=${selectedDate}`;
-        } else {
-            alert("Por favor, selecione uma data para consulta.");
-        }
-    });
 });
